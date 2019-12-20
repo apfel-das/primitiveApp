@@ -240,10 +240,23 @@ def block_check(linesArr,initIndex,finalIndex,totLines,record):
 	separatorCount = 0	# flag the incident, where two separators are found
 	startIndex = 0    	# mark the index of first occurence 
 	endIndex = 0      	# mark the index of last occurence
-	contextCount = 0  	# count the actual context lines, if requirements are met store them permanently
+	totAmount = 0  	# count the actual context lines, if requirements are met store them permanently
+	totSum = 0
 	while i < totLines:
 		line = linesArr[i]
 		
+		#try to add, if there is nothing out there to add up, just move on.
+		try:
+			totSum = totSum + round(float(line.split()[3]),4)
+		except IndexError:
+			pass
+			
+				
+
+
+
+
+
 		if len(line.strip()) == 0:
 
 			i+=1
@@ -257,20 +270,25 @@ def block_check(linesArr,initIndex,finalIndex,totLines,record):
 				separatorCount+=1
 				startIndex = i
 				
+				
 			else:
+				
 				endIndex = i #mark the end of possible useful block
 				separatorCount == 0  #restore flag 
 				if is_valid_afm(startIndex+1,linesArr)  and is_valid_total_line(linesArr[endIndex -1]):
 
-					
-
-				
-					if check_context(startIndex+2,endIndex-1,linesArr):
-						save_context(startIndex+1,endIndex-1,linesArr,record,el)
-						el += 1
+					##print("Debug => Sum of products is now = " +str(totSum))
+					   
+					if float(linesArr[endIndex -1].split()[1]) == round(float(totSum),4):
+						
+						if check_context(startIndex+2,endIndex-1,linesArr):
+							save_context(startIndex+1,endIndex-1,linesArr,record,el)
+							el += 1
 			
 
 				startIndex = i  #mark the next possible start
+				totSum = 0		#rember that each time iteration is over a new grand total
+
 				
 				
 		i+=1
@@ -314,7 +332,8 @@ while ans != 4:
 					block_check(file_lines,0,0,total_lines,records)
 		except FileNotFoundError:
 			pass
-		
+		for keys,recs in records.items():
+			print(keys,recs)
 				
 		ans = -1
 					
